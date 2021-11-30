@@ -58,6 +58,9 @@ async function processarDna(arrayValido: string[]) {
                 arrayColuna[i] = arrayLinhaColuna[i];
             }
         }
+
+        let minimoLinha = (quantidadeLinhas - 2);
+        
     }
 
     for (let nLinha = 0; nLinha < arrayDna.length; nLinha++) {
