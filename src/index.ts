@@ -1,21 +1,12 @@
-/*Criar uma assinatura que verifique se uma determinada sequencia é simio ou humano atraves de uma tabela
-NxN onde encontrar uma ou mais sequencia de quatro caracteres na horizontal, vertical ou diagonal.
+import express, {Request, Response} from "express";
 
-recebe como parametro um json na seguinte estrutura
+const app = express();
+app.use(express.json());
 
-dna = ["CTGAGA", "CTGAGC", "TATTGT", "AGAGGG", "CCCTA", "TCACTG"];
-
-a sequencia so podera contar com A, T, C, G
-
-DESAFIO
-Desenvolver um metodo que esteja de acordo com a proposta isSimian
-
-validar a sequencia
- */
 
 const dnaX = [
     "CTGAGA",
-    "CTGAGC",
+    "CTAAGC",
     "TATTGT",
     "AGAGGG",
     "CCCCTA",
@@ -31,19 +22,37 @@ const dnaY = [
     "TCACTG"
 ];
 
-isSimian(dnaX)
+app.post("/simian", (request: Request, response: Response) => {
+    const { dna } = request.body
+    isSimian(dna).then(res => {
+        if(res) {
+            let valido = res[0];
+            let mensagem = res[1];
+
+            if(!valido) {
+                return response.status(403).json({message: mensagem});
+            }
+
+            return response.status(200).json({message: mensagem});
+        }
+    })
+});
 
 async function isSimian(dna: string[]) {
 
     if(!validarDna(dna)) {
-        console.log("DNA incorreto");
-        return;
+        return [false, "DNA incorreto"];
     }
 
-    mapearDna(dna);
-    return validarDna(dna);
+    return mapearDna(dna).then(res => {
+        if(!res) {
+            return [false, "DNA de humano encontrado"];
+        }
+        return [true, "DNA de simeo encontrado"];
+    });
 }
 
+//Funcao para validar se uma sequencia e valida
 function validarDna(sequenciaDna: string[]) {
     let dnaValido = true;
     for (let i = 0; i < sequenciaDna.length; i++) {
@@ -54,13 +63,13 @@ function validarDna(sequenciaDna: string[]) {
     return dnaValido;
 }
 
+//Funcao que mapeia direcoes horizontais, verticais e diagnonais
 async function mapearDna(sequenciaDna: string[]) {
     let listaHorizontal = sequenciaDna;
     let listaVertical = [];
     let dnaSimio = []
     let diagonalEsquerda = [];
     let diagonalDireita = []
-    let concat = ""
 
     //valida o dna na horizontal
     for (let i = 0; i < listaHorizontal.length; i++) {
@@ -83,9 +92,7 @@ async function mapearDna(sequenciaDna: string[]) {
         if(dnaVerticalSimio) dnaSimio.push(`V >>> ${listaVertical[i]}`)
     }
 
-    //organiza itens na diagonal esquerda
-    const leftDiagonalSequences = []
-
+    //organiza itens na diagonal esquerda para direita
     for (let i = 0; i < sequenciaDna.length; i++) {
         let leftDiagonalSequenceHorizontal = sequenciaDna[0].charAt(i)
         let nextPosition = i + 1
@@ -106,6 +113,13 @@ async function mapearDna(sequenciaDna: string[]) {
         diagonalEsquerda.push(leftDiagonalSequenceVertical)
     }
 
+    //valida o dna na diagonal esquerda
+    for (let i = 0; i < listaHorizontal.length; i++) {
+        let dnaDiagonalEsquerdaSimio = await validarSequenciaSimio(diagonalEsquerda[i]);
+        if(dnaDiagonalEsquerdaSimio) dnaSimio.push(`DE >>> ${diagonalEsquerda[i]}`)
+    }
+
+    //organiza itens na diagonal direita para esquerda
     for (let k = sequenciaDna.length - 1; k >= 0; k--) {
         let rightDiagonalSequenceHorizontal = sequenciaDna[0].charAt(k)
         let nextDnaSequencePosition = 1
@@ -117,7 +131,6 @@ async function mapearDna(sequenciaDna: string[]) {
         }
         diagonalDireita.push(rightDiagonalSequenceHorizontal)
     }
-
 
     for (let i = 1; i < sequenciaDna.length; i++) {
         let rightDiagonalSequenceVertical = sequenciaDna[i].charAt(sequenciaDna.length - 1)
@@ -131,6 +144,14 @@ async function mapearDna(sequenciaDna: string[]) {
         diagonalDireita.push(rightDiagonalSequenceVertical)
     }
 
+    //valida o dna na diagonal direita
+    for (let i = 0; i < listaHorizontal.length; i++) {
+        let dnaDiagonalDireitaSimio = await validarSequenciaSimio(diagonalDireita[i]);
+        if(dnaDiagonalDireitaSimio) dnaSimio.push(`DD >>> ${diagonalDireita[i]}`)
+    }
+
+    return dnaSimio.length > 0;
+
 }
 
 function checarSequencia(sequencia: string) {
@@ -142,3 +163,5 @@ async function validarSequenciaSimio(sequencia: string) {
     let regex = new RegExp(/.*?(?=AAAA)|(?=TTTT)|(?=CCCC)|(?=GGGG)/gm)
     return regex.test(sequencia);
 }
+
+app.listen(4000, () => console.log('Server is running on PORT 4000'));
