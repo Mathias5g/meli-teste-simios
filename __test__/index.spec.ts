@@ -1,4 +1,4 @@
-import {app} from "./index";
+import {app} from "../src";
 
 const request = require("supertest");
 
@@ -6,7 +6,9 @@ describe('Teste Api Simio - Mercado Livre', () => {
 	it('should checarStats', async () => {
 		const res = await request(app).get("/stats");
 		expect(res.status).toBe(200);
-		expect(res.body).toHaveProperty("result");
+		expect(res.body).toHaveProperty("count_mutant_dna");
+		expect(res.body).toHaveProperty("count_human_dna");
+		expect(res.body).toHaveProperty("ratio");
 	});
 
 	it('should isSimian dna invalid', async () => {

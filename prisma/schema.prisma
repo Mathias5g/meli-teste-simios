@@ -8,7 +8,9 @@ datasource db {
 }
 
 model Simio {
-   id Int @id @default(autoincrement())
-   dna String
-   simio Boolean @default(false)
+   id       Int     @id          @default(autoincrement())
+   dna      String  @unique
+   count_mutant_dna   Int     @default(0)
+   count_human_dna    Int     @default(0)
+   @@map("simios")
 }
