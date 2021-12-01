@@ -1,4 +1,7 @@
 import express, {Request, Response} from "express";
+var hash = require('object-hash');
+
+import prismaClient from "./prisma";
 
 const app = express();
 app.use(express.json());
@@ -38,16 +41,31 @@ app.post("/simian", (request: Request, response: Response) => {
     })
 });
 
+app.get("/stats", (request: Request, response: Response) => {
+    checarStats().then(res => {
+        return response.status(200).json(res);
+    });
+});
+
 async function isSimian(dna: string[]) {
+
+    let dnaProcessado = await verificarDna(hash(dna))
 
     if(!validarDna(dna)) {
         return [false, "DNA incorreto"];
     }
 
+    if(dnaProcessado) {
+        return [false, "Esse DNA ja foi processado"];
+    }
+
     return mapearDna(dna).then(res => {
         if(!res) {
+            salvarDna(hash(dna), false);
             return [false, "DNA de humano encontrado"];
         }
+
+        salvarDna(hash(dna), true);
         return [true, "DNA de simeo encontrado"];
     });
 }
@@ -152,6 +170,44 @@ async function mapearDna(sequenciaDna: string[]) {
 
     return dnaSimio.length > 0;
 
+}
+
+async function verificarDna(dna: string) {
+    return await prismaClient.simio.findFirst({
+        where: {
+            dna
+        }
+    });
+}
+
+async function salvarDna(dna: string, simio: boolean) {
+    return await prismaClient.simio.create({
+        data: {
+            dna,
+            simio
+        }
+    });
+}
+
+async function checarStats() {
+    let stats;
+
+    let contagem = await prismaClient.simio.groupBy({
+        by: ['simio'],
+        _count: {
+            simio: true
+        },
+    });
+
+    let count_mutant_dna = contagem[1]._count['simio'];
+    let count_human_dna = contagem[0]._count['simio'];
+    let ratio = (count_human_dna / count_mutant_dna);
+
+    return stats = {
+        count_mutant_dna,
+        count_human_dna,
+        ratio: ratio.toFixed(2)
+    };
 }
 
 function checarSequencia(sequencia: string) {
