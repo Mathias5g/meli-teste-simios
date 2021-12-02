@@ -1,4 +1,4 @@
-import prismaClient from "../prisma";
+import prismaClient from "../database/client";
 import {Request, Response} from "express";
 import {Utils} from '../utils/Utils';
 

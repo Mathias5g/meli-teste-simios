@@ -3,14 +3,14 @@ generator client {
 }
 
 datasource db {
-    provider = "sqlite"
-    url      = "file:./dev.db"
+    provider = "mysql"
+    url      = "mysql://root:root@localhost:3306/simio_teste"
 }
 
 model Simio {
    id       Int     @id          @default(autoincrement())
    dna      String  @unique
-   count_mutant_dna   Int     @default(0)
-   count_human_dna    Int     @default(0)
+   isSimian Boolen  @db.TinyInt(1)
+   created_at DateTime
    @@map("simios")
 }

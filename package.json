@@ -4,7 +4,7 @@
   "description": "Teste Mercado Livre - Simio",
   "main": "index.js",
   "scripts": {
-    "dev": "ts-node-dev --exit-child src/index.ts"
+    "dev": "ts-node-dev --exit-child src/server.ts"
   },
   "directories": {
     "test": "test"

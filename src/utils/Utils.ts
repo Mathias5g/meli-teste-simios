@@ -1,4 +1,4 @@
-import prismaClient from "../prisma";
+import prismaClient from "../database/client";
 
 class Utils {
 	//Funcao para validar se uma sequencia e valida
