@@ -17,7 +17,7 @@
     $ yarn run dev # ou `npm run dev
 
 ## Iniciando o banco de dados 
-    $ prisma migrate dev
+    $ npx prisma migrate dev
 
 ## Testes
     $ yarn jest
@@ -95,6 +95,24 @@ Body:
           "response": []
 		}
 	]
+}
+```
+
+## Testar AWS
+## - Routes
+	[GET]	3.19.79.33:4000/stats
+	[POST]	3.19.79.33:4000/simian
+Body:
+- Simio
+```json
+{
+    "dna": ["CTGAGA", "CTAAGC", "TATTGT", "AGAGGG", "CCCCTA", "TCACTG"]
+}
+```
+- Humano
+```json
+{
+    "dna": ["ATGCGA", "CAGTGC", "TTATTT", "AGACGG", "GCGTCA", "TCACTG"]
 }
 ```
 
