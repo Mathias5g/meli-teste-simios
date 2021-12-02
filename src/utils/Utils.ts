@@ -38,7 +38,7 @@ class Utils {
 		//valida o dna na vertical
 		for (let i = 0; i < listaHorizontal.length; i++) {
 			let dnaVerticalSimio = await this.validarSequenciaSimio(listaVertical[i]);
-			if (dnaVerticalSimio) dnaSimio.push(`V >>> ${listaVertical[i]}`)
+			if (dnaVerticalSimio) dnaSimio.push(listaVertical[i])
 		}
 
 		//organiza itens na diagonal esquerda para direita
@@ -65,7 +65,7 @@ class Utils {
 		//valida o dna na diagonal esquerda
 		for (let i = 0; i < listaHorizontal.length; i++) {
 			let dnaDiagonalEsquerdaSimio = await this.validarSequenciaSimio(diagonalEsquerda[i]);
-			if (dnaDiagonalEsquerdaSimio) dnaSimio.push(`DE >>> ${diagonalEsquerda[i]}`)
+			if (dnaDiagonalEsquerdaSimio) dnaSimio.push(diagonalEsquerda[i])
 		}
 
 		//organiza itens na diagonal direita para esquerda
@@ -96,7 +96,7 @@ class Utils {
 		//valida o dna na diagonal direita
 		for (let i = 0; i < listaHorizontal.length; i++) {
 			let dnaDiagonalDireitaSimio = await this.validarSequenciaSimio(diagonalDireita[i]);
-			if (dnaDiagonalDireitaSimio) dnaSimio.push(`DD >>> ${diagonalDireita[i]}`)
+			if (dnaDiagonalDireitaSimio) dnaSimio.push(diagonalDireita[i])
 		}
 
 		return dnaSimio.length > 0;

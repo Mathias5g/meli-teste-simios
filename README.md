@@ -19,6 +19,10 @@
 ## Iniciando o banco de dados 
     $ prisma migrate dev
 
+## Testes
+    $ yarn jest
+    $ yarn jest --coverage
+
 ## Testar Api localmente [Postman](https://www.postman.com/downloads/)
 ## Rotas
     [GET] localhost:4000/stats
