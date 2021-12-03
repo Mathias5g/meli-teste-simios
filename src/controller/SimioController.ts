@@ -1,54 +1,42 @@
-import prismaClient from "../database/client";
 import {Request, Response} from "express";
 import {Utils} from '../utils/Utils';
+import {PrismaSimioRepository} from "../repositories/prisma/PrismaSimioRepository";
+import {ISimiosRepository} from "../repositories/ISimiosRepositories";
 
 const hash = require('object-hash');
 
 class SimioController {
-	async isSimian(request: Request, response: Response) {
+
+	async isSimian(request: Request, response: Response): Promise<Response> {
+		let salvarDna;
 		const {dna} = request.body;
-		let utils = new Utils();
-		let dnaProcessado = await utils.verificarDna(hash(dna))
-		let validaDna = new Utils().validarDna(dna)
+		const utils = new Utils();
+		const simioRepository = new PrismaSimioRepository();
+		const verificarDnaBancoDados = await simioRepository.exists(hash(dna));
+		const mapearDna = await utils.mapearDna(dna);
 
-		if (!validaDna) {
-			return response.status(403).send({message: "DNA incorreto"});
+		if (!utils.validarDna(dna)) {
+			return response.status(403).json({message: "DNA incorreto"});
 		}
 
-		if (dnaProcessado) {
-			return response.status(403).send({message: "Esse DNA ja foi processado"});
+		if (verificarDnaBancoDados) {
+			return response.status(403).json({message: "Esse DNA ja foi processado"});
 		}
 
-		//cobrir
-		return utils.mapearDna(dna).then(res => {
-			if (!res) {
-				utils.salvarDna(hash(dna), 0, 1);
-				return response.status(403).send({message: "DNA de humano encontrado"});
-			}
+		if (!mapearDna) {
+			salvarDna = await simioRepository.create({dna: hash(dna), isSimian: false});
+			return response.status(403).json(salvarDna);
+		}
 
-			utils.salvarDna(hash(dna), 1, 0); //ate aqui
-			return response.status(200).send({message: "DNA de Simeo encontrado"});
-		});
+		salvarDna = await simioRepository.create({dna: hash(dna), isSimian: true});
+		return response.status(200).json(salvarDna);
+
 	}
 
-	async checarStats(request: Request, response: Response) {
-		let res = await prismaClient.simio.aggregate({
-			_sum: {
-				count_mutant_dna: true,
-				count_human_dna: true
-			}
-		});
-
-		let count_mutant_dna = res._sum.count_mutant_dna;
-		let count_human_dna = res._sum.count_human_dna;
-		// @ts-ignore
-		let ratio = (count_mutant_dna / count_human_dna).toFixed(2);
-
-		return response.send({
-			count_mutant_dna,
-			count_human_dna,
-			ratio
-		}).status(200);
+	async checarStats(request:Request, response: Response): Promise<Response> {
+		const simioRepository = new PrismaSimioRepository();
+		let stats = await simioRepository.stats();
+		return response.status(200).json(stats);
 	}
 }
 

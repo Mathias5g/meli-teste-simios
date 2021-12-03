@@ -1,19 +1,17 @@
 class Simio {
     id?: number;
     dna: string;
-    isSimion?: number;
-    isHuman?: number;
+    isSimian: boolean;
 
-    private constructor({dna, isSimion, isHuman}: Simio) {
+    private constructor({dna, isSimian}: Simio) {
         return Object.assign(this, {
             dna,
-            isSimion,
-            isHuman
+            isSimian
         })
     }
 
-    static create({dna, isSimion, isHuman}: Simio) {
-        return new Simio({dna, isSimion, isHuman});
+    static create({dna, isSimian}: Simio) {
+        return new Simio({dna, isSimian});
     }
 }
 

@@ -31,16 +31,4 @@ describe("Teste Unitario - Utils", () => {
 		expect(valida).toBeTruthy();
 	});
 
-	it("verifica se a sequencia do dna já foi processada", async () => {
-		let dna = ["ATGCGA", "CAGTGC", "TTATTT", "AGACGG", "CCCCCA", "TCACTG"];
-		await sut.salvarDna(hash(dna), 1, 0);
-		await expect(sut.verificarDna(hash(dna))).toBeTruthy();
-	});
-
-	it("verifica se a sequencia do dna não foi processada", async () => {
-		let dna = ["ATGCGA", "CAGTGC", "TTATTT", "AGACGG", "CCCCCA", "TCACTG"];
-		await sut.salvarDna(hash(dna), 1, 0);
-		await expect(sut.verificarDna(hash(dna))).toBeFalsy();
-	});
-
 });

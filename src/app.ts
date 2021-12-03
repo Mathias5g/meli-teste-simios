@@ -1,7 +1,5 @@
 import express from "express";
 import { routes } from "./routes/routes";
-import {SimioController} from "./controller/SimioController";
-import {Simio} from "./entities/Simio";
 
 const app = express();
 app.use(express.json());

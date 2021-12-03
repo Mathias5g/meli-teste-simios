@@ -103,26 +103,6 @@ class Utils {
 
 	}
 
-	async verificarDna(dna: string): Promise<boolean> {
-		const sequencia = await prismaClient.simio.findUnique({
-			where: {
-				dna
-			}
-		})
-
-		return !!sequencia;
-	}
-
-	async salvarDna(dna: string, simian: number, human: number) {
-		return await prismaClient.simio.create({
-			data: {
-				dna,
-				count_mutant_dna: simian,
-				count_human_dna: human
-			}
-		});
-	}
-
 	checarSequencia(sequencia: string) {
 		let regex = new RegExp(/^[ATGC]*$/gm);
 		return regex.test(sequencia);
